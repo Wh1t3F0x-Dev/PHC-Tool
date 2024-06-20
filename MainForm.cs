@@ -36,7 +36,10 @@ namespace PHCTool
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            MDCreator mDCreator = new MDCreator();
+            mDCreator.Show();
+            mDCreator.mainForm = this;
+            this.Hide();
         }
 
         private void button6_Click(object sender, EventArgs e)
