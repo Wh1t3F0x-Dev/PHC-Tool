@@ -132,7 +132,7 @@ namespace Analisis
                         {
                             ExcelRangeBase cellToUpdate = worksheet.Cells[i, column];
                             // Aquí puedes establecer el nuevo valor para la celda
-                            cellToUpdate.Value = "fixed";
+                            cellToUpdate.Value = "Fixed";
                         }
 
                         // Guarda los cambios en el archivo
