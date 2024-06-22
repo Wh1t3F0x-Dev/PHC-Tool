@@ -19,7 +19,7 @@
         {
             InitializeComponent();
             checkConfigFile();
-            retFavouritePath();
+            RetFavouritePath();
             this.FormClosed += DirCreator_FormClosed;
         }
 
@@ -64,7 +64,7 @@
 
         }
 
-        private void retFavouritePath()
+        private void RetFavouritePath()
         {
             if (!configFileExists)
             {

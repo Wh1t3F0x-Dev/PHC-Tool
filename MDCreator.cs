@@ -1,9 +1,12 @@
 ﻿using OfficeOpenXml;
+using System.Drawing;
+using System.IO;
 using System.IO.Compression;
 using static OfficeOpenXml.ExcelErrorValue;
 
 namespace PHCTool
 {
+
     public partial class MDCreator : Form
     {
         List<string> filesList = new List<string>();
@@ -12,6 +15,7 @@ namespace PHCTool
 
         bool needToClose = true;
 
+        string path = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
 
         /// <summary>
         /// UI Things
@@ -56,12 +60,8 @@ namespace PHCTool
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            CreateMDFiles();
         }
-
-        /// <summary>
-        /// Logic to create the MD files from a TechSpecs file
-        /// </summary>
 
         private void CreateLabels(string[] array)
         {
@@ -75,7 +75,8 @@ namespace PHCTool
                     labelTittle.Location = new Point(0, 0);
                     panel1.Controls.Add(labelTittle);
                 }
-                else {
+                else
+                {
                     MessageBox.Show("Introduce un archivo por favor.");
                 }
             }
@@ -86,30 +87,17 @@ namespace PHCTool
 
         }
 
-        private void CreateMDFiles() {
+        /// <summary>
+        /// Logic to create the MD files from a TechSpecs file
+        /// </summary>
 
-        }
-
-        private void FindCellWithValue(ExcelWorksheet worksheet, string value) {
-            foreach (var cell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+        private List<InfoCelda> GetFieldsFromExcel() {
+            List<InfoCelda> fields = new List<InfoCelda>();
+            try
             {
-                if (cell.Value != null && cell.Value.ToString().Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return cell;
-                }
-            }
-            return null;
-        }
+                string file = "";
+                if (filesList.Count != 0) file = filesList[0];
 
-        private void CreateDir() { 
-            
-        }
-
-        private void ChangeValue(string[] array)
-        {
-            foreach (string file in array)
-            {
-                //MessageBox.Show($"The file is {file}");
                 FileInfo fileInfo = new FileInfo(file);
 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -117,50 +105,109 @@ namespace PHCTool
                 using (ExcelPackage package = new ExcelPackage(fileInfo))
                 {
 
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
+                    int rowCount = worksheet.Dimension.Rows;
 
-                    //MessageBox.Show($"The number of the worksheets is {package.Workbook.Worksheets.Count}");
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                    ExcelRangeBase codeCell = FindCellWithValueInFirstRow(worksheet, "code");
-
-
-                    if (codeCell != null)
+                    for (int i = 2; i <= rowCount; i++)
                     {
-                        int column = codeCell.Start.Column;
+                        bool value = false;
+                        if (worksheet.Cells[i, 1].Text == "N/A") value = true;
 
-                        // Obtiene la fila en la que se encuentra la celda "code"
-                        int row = codeCell.Start.Row;
+                        fields.Add(new InfoCelda(
+                                value,
+                                worksheet.Cells[i, 4].Text,
+                                worksheet.Cells[i, 5].Text,
+                                worksheet.Cells[i, 6].Text,
+                                worksheet.Cells[i, 7].Text,
+                                worksheet.Cells[i, 8].Text,
+                                worksheet.Cells[i, 11].Text,
+                                worksheet.Cells[i, 12].Text,
+                                worksheet.Cells[i, 13].Text
+                            )
+                        );
 
-                        // Actualiza los valores de las celdas debajo de la celda "code" en la misma columna
-                        for (int i = row + 1; i <= worksheet.Dimension.End.Row; i++)
-                        {
-                            ExcelRangeBase cellToUpdate = worksheet.Cells[i, column];
-                            // Aquí puedes establecer el nuevo valor para la celda
-                            cellToUpdate.Value = "Fixed";
-                        }
-
-                        // Guarda los cambios en el archivo
-                        package.Save();
-                    }
-                    else
-                    {
-                        MessageBox.Show($"No se encontro el valor de Code comprueba a meter otro archivo valido");
                     }
 
                 }
-
+                
             }
+            catch {
+                MessageBox.Show($"Es necesario que insertes solo un archivo.");
+            }
+
+            return fields;
         }
 
-        private ExcelRangeBase FindCellWithValueInFirstRow(ExcelWorksheet worksheet, string value)
-        {
-            foreach (var cell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+        private void CreateMDFiles() {
+            string ruta = CreateDir();
+            List<InfoCelda> files = GetFieldsFromExcel();
+
+            if (CheckPlantillaIsOk())
             {
-                if (cell.Value != null && cell.Value.ToString().Equals(value, StringComparison.OrdinalIgnoreCase))
+                string contenidoPlantilla = File.ReadAllText(Path.Combine(path, "Plantilla.mdx"));
+
+                foreach (var file in files)
                 {
-                    return cell;
+                    string textForNA = "";
+
+                    if (file.notApplicable) textForNA = ":::warning N/A\r\n\r\nContestar **N/A** si no aplican los siguientes parametros:\r\n\r\n:::";
+
+                    string contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + Path.GetFileName(filesList[0]).Split('-')[0])
+                                                                .Replace("--SubTitulo--", file.subtittle)
+                                                                .Replace("--SubSubTitulo--", file.subsubtittle)
+                                                                .Replace("--Description--", file.description)
+                                                                .Replace("--RecommendedValue--", file.recommendeValue)
+                                                                .Replace("--SecurityRationale--", file.securityRationale)
+                                                                .Replace("--Comprobacion--", file.validation)
+                                                                .Replace("--Modificacion--", file.configuration)
+                                                                .Replace("--NoAplica--, ", textForNA);
+
+                    string nombreArchivo = file.tittle + "_" + Path.GetFileName(filesList[0]).Split('-')[0] + ".mdx";
+
+                    string newPath = Path.Combine(ruta, nombreArchivo);
+
+                    File.WriteAllText(newPath, contenidoPersonalizado);
                 }
             }
-            return null;
+            else {
+                MessageBox.Show("Falta la plantilla (Plantilla.mdx) en el directorio de la aplicacion.");
+                return;
+            }
         }
+
+        private bool CheckPlantillaIsOk() {
+            if (File.Exists(Path.Combine(path, "Plantilla.mdx")))
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        private string CreateDir() {
+            string temporalDir = "";
+            try
+            {
+                if (filesList.Count > 0) {
+                    string dirName = Path.GetFileName(filesList[0]).Split('.')[0].Replace(" ", "_");
+
+                    temporalDir = Path.Combine(path, dirName);
+                    if (!Directory.Exists(temporalDir)) Directory.CreateDirectory(temporalDir);
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"Error al crear la carpeta temporal: {ex.Message}.");
+
+            }
+
+            return temporalDir;
+
+        }
+
     }
 }
