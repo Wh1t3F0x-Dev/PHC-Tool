@@ -145,22 +145,25 @@ namespace PHCTool
             if (CheckPlantillaIsOk())
             {
                 string contenidoPlantilla = File.ReadAllText(Path.Combine(path, "Plantilla.mdx"));
+                string contenidoPersonalizado = "";
 
                 foreach (var file in files)
                 {
-                    string textForNA = "";
 
-                    if (file.notApplicable) textForNA = ":::warning N/A\r\n\r\nContestar **N/A** si no aplican los siguientes parametros:\r\n\r\n:::";
-
-                    string contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + Path.GetFileName(filesList[0]).Split('-')[0])
+                    contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + Path.GetFileName(filesList[0]).Split('-')[0])
                                                                 .Replace("--SubTitulo--", file.subtittle)
                                                                 .Replace("--SubSubTitulo--", file.subsubtittle)
                                                                 .Replace("--Description--", file.description)
                                                                 .Replace("--RecommendedValue--", file.recommendeValue)
                                                                 .Replace("--SecurityRationale--", file.securityRationale)
                                                                 .Replace("--Comprobacion--", file.validation)
-                                                                .Replace("--Modificacion--", file.configuration)
-                                                                .Replace("--NoAplica--, ", textForNA);
+                                                                .Replace("--Modificacion--", file.configuration);
+
+                    if (!file.notApplicable)
+                    {
+                        contenidoPersonalizado = contenidoPlantilla.Replace("{/*", " ").Replace("*/}", " ");
+                    }
+
 
                     string nombreArchivo = file.tittle + "_" + Path.GetFileName(filesList[0]).Split('-')[0] + ".mdx";
 
