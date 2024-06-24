@@ -150,7 +150,22 @@ namespace PHCTool
                 foreach (var file in files)
                 {
 
-                    contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + Path.GetFileName(filesList[0]).Split('-')[0])
+                    if (!file.notApplicable)
+                    {
+                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + " " + Path.GetFileName(filesList[0]).Split('-')[0])
+                                                                .Replace("--SubTitulo--", file.subtittle)
+                                                                .Replace("--SubSubTitulo--", file.subsubtittle)
+                                                                .Replace("--Description--", file.description)
+                                                                .Replace("--RecommendedValue--", file.recommendeValue)
+                                                                .Replace("--SecurityRationale--", file.securityRationale)
+                                                                .Replace("--Comprobacion--", file.validation)
+                                                                .Replace("--Modificacion--", file.configuration)
+                                                                .Replace("{/*", " ")
+                                                                .Replace("*/}", " ");
+                    }
+                    else {
+
+                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + " " + Path.GetFileName(filesList[0]).Split('-')[0])
                                                                 .Replace("--SubTitulo--", file.subtittle)
                                                                 .Replace("--SubSubTitulo--", file.subsubtittle)
                                                                 .Replace("--Description--", file.description)
@@ -159,9 +174,6 @@ namespace PHCTool
                                                                 .Replace("--Comprobacion--", file.validation)
                                                                 .Replace("--Modificacion--", file.configuration);
 
-                    if (!file.notApplicable)
-                    {
-                        contenidoPersonalizado = contenidoPlantilla.Replace("{/*", " ").Replace("*/}", " ");
                     }
 
 

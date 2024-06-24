@@ -27,8 +27,22 @@ namespace PHCTool
             this.description = description;
             this.recommendeValue = recommendeValue;
             this.securityRationale = securityRationale;
-            this.validation = validation;
-            this.configuration = configuration;
+            this.validation = ReplaceChars(validation);
+            this.configuration = ReplaceChars(configuration);
+        }
+
+        private string ReplaceChars(string textToReplace) {
+            string[] charsToReplace = { "```", "# ", "a)", "b)", "c)", "d)", "1)", "2)", "3)", "4)"};
+
+            string modifyText = textToReplace;
+
+            foreach (var item in charsToReplace)
+            {
+                modifyText = modifyText.Replace(item, " ");
+            }
+
+            return modifyText;
+
         }
     }
 }
