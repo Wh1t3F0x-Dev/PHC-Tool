@@ -32,7 +32,7 @@ namespace PHCTool
         }
 
         private string ReplaceChars(string textToReplace) {
-            string[] charsToReplace = { "```", "# ", "a)", "b)", "c)", "d)", "1)", "2)", "3)", "4)"};
+            string[] charsToReplace = {"```"};
 
             string modifyText = textToReplace;
 

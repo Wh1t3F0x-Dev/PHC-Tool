@@ -91,7 +91,8 @@ namespace PHCTool
         /// Logic to create the MD files from a TechSpecs file
         /// </summary>
 
-        private List<InfoCelda> GetFieldsFromExcel() {
+        private List<InfoCelda> GetFieldsFromExcel()
+        {
             List<InfoCelda> fields = new List<InfoCelda>();
             try
             {
@@ -129,16 +130,18 @@ namespace PHCTool
                     }
 
                 }
-                
+
             }
-            catch {
+            catch
+            {
                 MessageBox.Show($"Es necesario que insertes solo un archivo.");
             }
 
             return fields;
         }
 
-        private void CreateMDFiles() {
+        private void CreateMDFiles()
+        {
             string ruta = CreateDir();
             List<InfoCelda> files = GetFieldsFromExcel();
 
@@ -147,12 +150,13 @@ namespace PHCTool
                 string contenidoPlantilla = File.ReadAllText(Path.Combine(path, "Plantilla.mdx"));
                 string contenidoPersonalizado = "";
 
+
                 foreach (var file in files)
                 {
 
                     if (!file.notApplicable)
                     {
-                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + " " + Path.GetFileName(filesList[0]).Split('-')[0])
+                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + $" {textBox2.Text}")
                                                                 .Replace("--SubTitulo--", file.subtittle)
                                                                 .Replace("--SubSubTitulo--", file.subsubtittle)
                                                                 .Replace("--Description--", file.description)
@@ -163,9 +167,10 @@ namespace PHCTool
                                                                 .Replace("{/*", " ")
                                                                 .Replace("*/}", " ");
                     }
-                    else {
+                    else
+                    {
 
-                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + " " + Path.GetFileName(filesList[0]).Split('-')[0])
+                        contenidoPersonalizado = contenidoPlantilla.Replace("--Titulo--", file.tittle + $" {textBox2.Text}")
                                                                 .Replace("--SubTitulo--", file.subtittle)
                                                                 .Replace("--SubSubTitulo--", file.subsubtittle)
                                                                 .Replace("--Description--", file.description)
@@ -177,39 +182,52 @@ namespace PHCTool
                     }
 
 
-                    string nombreArchivo = file.tittle + "_" + Path.GetFileName(filesList[0]).Split('-')[0] + ".mdx";
+                    string nombreArchivo = file.tittle + "_" + textBox2.Text + ".mdx";
 
                     string newPath = Path.Combine(ruta, nombreArchivo);
 
                     File.WriteAllText(newPath, contenidoPersonalizado);
                 }
             }
-            else {
+            else
+            {
                 MessageBox.Show("Falta la plantilla (Plantilla.mdx) en el directorio de la aplicacion.");
                 return;
             }
         }
 
-        private bool CheckPlantillaIsOk() {
+        private bool CheckPlantillaIsOk()
+        {
             if (File.Exists(Path.Combine(path, "Plantilla.mdx")))
             {
                 return true;
             }
-            else {
+            else
+            {
                 return false;
             }
         }
 
-        private string CreateDir() {
+        private string CreateDir()
+        {
             string temporalDir = "";
             try
             {
-                if (filesList.Count > 0) {
-                    string dirName = Path.GetFileName(filesList[0]).Split('.')[0].Replace(" ", "_");
+                if (filesList.Count > 0)
+                {
+                    string dirName = "";
+                    if (textBox2.Text != null)
+                    {
+                        dirName = textBox2.Text;
+                    }
+                    else {
+                        dirName = Path.GetFileName(filesList[0]).Split('.')[0].Replace(" ", "_");
+                    }
+                    
 
                     temporalDir = Path.Combine(path, dirName);
                     if (!Directory.Exists(temporalDir)) Directory.CreateDirectory(temporalDir);
-                    
+
                 }
 
             }

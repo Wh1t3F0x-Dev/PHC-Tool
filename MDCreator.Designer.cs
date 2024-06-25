@@ -35,6 +35,8 @@
             label2 = new Label();
             button1 = new Button();
             label1 = new Label();
+            textBox2 = new TextBox();
+            label4 = new Label();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -68,7 +70,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(69, 156);
+            label3.Location = new Point(90, 183);
             label3.Margin = new Padding(4, 0, 4, 0);
             label3.Name = "label3";
             label3.Size = new Size(485, 25);
@@ -79,7 +81,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 20F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(48, 102);
+            label2.Location = new Point(69, 129);
             label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
             label2.Size = new Size(537, 54);
@@ -107,11 +109,31 @@
             label1.TabIndex = 13;
             label1.Text = "Tech Spects Seleccionadas:";
             // 
+            // textBox2
+            // 
+            textBox2.Location = new Point(87, 50);
+            textBox2.Margin = new Padding(4);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(596, 31);
+            textBox2.TabIndex = 15;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(87, 13);
+            label4.Margin = new Padding(0);
+            label4.Name = "label4";
+            label4.Size = new Size(216, 25);
+            label4.TabIndex = 14;
+            label4.Text = "Titulo Adicional Tech Spec\r\n";
+            // 
             // MDCreator
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(691, 543);
+            Controls.Add(textBox2);
+            Controls.Add(label4);
             Controls.Add(label1);
             Controls.Add(button1);
             Controls.Add(panel1);
@@ -135,5 +157,7 @@
         private Label label2;
         private Button button1;
         private Label label1;
+        private TextBox textBox2;
+        private Label label4;
     }
 }
