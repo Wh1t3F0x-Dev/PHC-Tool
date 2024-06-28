@@ -98,8 +98,22 @@ namespace BlueCare
 
         private void button3_Click(object sender, EventArgs e)
         {
+            string path = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+
+            string file = "";
+
+            if (textBox2.Text != "") {
+                file = Path.Combine(path, $"{textBox2.Text}" + ".csv");
+            }
+
+            if (File.Exists(file)) {
+                File.Delete(file);
+            }
+
             textBox3.Text = "";
             textBox2.Text = "";
+
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
